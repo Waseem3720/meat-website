@@ -1,0 +1,568 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Self-hosted fonts
+   Declared here instead of via next/font/google: Google sometimes hands back
+   font files as fonts.gstatic.com/l/font?kit=…&skey=…&v=…, and Turbopack's dev
+   font resolver splits that URL on "&" and fails with
+   "next/font/google queries have exactly one entry". The woff2 files live in
+   /public/fonts and are served directly by the app, so dev and build both work.
+--------------------------------------------------------------------------- */
+@font-face {
+  font-family: "Oswald";
+  font-style: normal;
+  font-weight: 200 700;
+  font-display: swap;
+  src: url("/fonts/oswald-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url("/fonts/open-sans-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Cairo";
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url("/fonts/cairo-arabic.woff2") format("woff2");
+  unicode-range: U+0600-06FF, U+0750-077F, U+0870-0891, U+0897-08E1, U+08E3-08FF,
+    U+200C-200E, U+2010-2011, U+204F, U+2E41, U+FB50-FDFF, U+FE70-FE74,
+    U+FE76-FEFC, U+102E0-102FB, U+10E60-10E7E, U+10EC2-10EC7, U+10EC9-10EEE,
+    U+10EF0-10EFF, U+1EE00-1EE03, U+1EE05-1EE1F, U+1EE21-1EE22, U+1EE24,
+    U+1EE27, U+1EE29-1EE32, U+1EE34-1EE37, U+1EE39, U+1EE3B, U+1EE42, U+1EE47,
+    U+1EE49, U+1EE4B, U+1EE4D-1EE4F, U+1EE51-1EE52, U+1EE54, U+1EE57, U+1EE59,
+    U+1EE5B, U+1EE5D, U+1EE5F, U+1EE61-1EE62, U+1EE64, U+1EE67-1EE6A,
+    U+1EE6C-1EE72, U+1EE74-1EE77, U+1EE79-1EE7C, U+1EE7E, U+1EE80-1EE89,
+    U+1EE8B-1EE9B, U+1EEA1-1EEA3, U+1EEA5-1EEA9, U+1EEAB-1EEBB, U+1EEF0-1EEF1;
+}
+
+@font-face {
+  font-family: "Cairo";
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url("/fonts/cairo-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: "Covered By Your Grace";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/covered-latin.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@theme {
+  --color-brand: #821f05;
+  --color-brand-dark: #a02a0b;
+  --color-ink: #2d2d2d;
+  --color-body: #4c4c4c;
+  --color-mist: #f1f1f1;
+  /* Page background and raised cards, so dark mode can repaint both. */
+  --color-paper: #ffffff;
+  --color-surface: #ffffff;
+  /* Always-dark surface (top bar) that must not flip with the mode. */
+  --color-night: #1a1513;
+
+  --font-display: var(--font-oswald), var(--font-cairo), sans-serif;
+  --font-body: var(--font-open-sans), var(--font-cairo), sans-serif;
+  --font-script: var(--font-covered), var(--font-cairo), cursive;
+}
+
+/* ---------------------------------------------------------------------------
+   Colour themes + light/dark mode
+   The utilities keep pointing at var(--color-*), so painting the variables on
+   <html> repaints the whole site without touching any component.
+--------------------------------------------------------------------------- */
+:root {
+  --brand-base: #821f05;
+
+  /* Font stacks: the families above are self-hosted, so these are plain names. */
+  --font-oswald: "Oswald";
+  --font-open-sans: "Open Sans";
+  --font-cairo: "Cairo";
+  --font-covered: "Covered By Your Grace";
+}
+
+html[data-theme="copper"] {
+  --brand-base: #b4530a;
+}
+
+html[data-theme="olive"] {
+  --brand-base: #4c6b2f;
+}
+
+html[data-theme="ocean"] {
+  --brand-base: #235a7a;
+}
+
+html[data-theme] {
+  --color-brand: var(--brand-base);
+  --color-brand-dark: color-mix(in srgb, var(--brand-base) 82%, #000);
+}
+
+html[data-mode="dark"] {
+  color-scheme: dark;
+  /* One single page tone in dark mode; only the raised cards sit a shade up. */
+  --color-paper: #1a1513;
+  --color-mist: #1a1513;
+  --color-surface: #241c18;
+  --color-ink: #f5efe9;
+  --color-body: #c3b6ad;
+  --color-brand: color-mix(in srgb, var(--brand-base) 62%, #fff);
+  --color-brand-dark: color-mix(in srgb, var(--brand-base) 85%, #000);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-body);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.45s ease, color 0.45s ease;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    color: var(--color-ink);
+  }
+
+  section[id] {
+    scroll-margin-top: 100px;
+  }
+
+  ::selection {
+    background-color: var(--color-brand);
+    color: #ffffff;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Typography helpers
+--------------------------------------------------------------------------- */
+.display-tight {
+  letter-spacing: -0.01em;
+}
+
+html[dir="rtl"] .display-tight {
+  line-height: 1.32;
+  letter-spacing: 0;
+}
+
+html[dir="rtl"] .nav-link,
+html[dir="rtl"] .product-name,
+html[dir="rtl"] .btn-primary {
+  letter-spacing: 0;
+}
+
+/* Arabic ink boxes are taller than Latin ones: Cairo's ascenders and
+   descenders reach ~1.27em, so at leading-none (line-height 1) the glyphs
+   spill out of the line box and get sliced wherever the parent clips them
+   (the marquee band, small labels, the price). Give RTL text the room it
+   needs instead of cropping it. */
+html[dir="rtl"] .leading-none {
+  line-height: 1.35;
+}
+
+html[dir="rtl"] .nav-link {
+  text-transform: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Surfaces, textures & micro animations
+--------------------------------------------------------------------------- */
+
+/* Hand-drawn butcher diagram used behind several sections. It has to flip
+   blend mode in dark mode, otherwise the multiply layer turns into mud. */
+/* The wordmark is dark artwork on a transparent PNG, so it has to flip in
+   dark mode instead of disappearing into the background. */
+.brand-logo {
+  transition: filter 0.4s ease;
+}
+
+html[data-mode="dark"] .brand-logo {
+  filter: invert(1) brightness(1.35) contrast(1.05);
+}
+
+.art-pattern {
+  background-image: url("/images/hero-line-art.jpg");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.7;
+  mix-blend-mode: multiply;
+}
+
+/* In dark mode the sections must read as one flat page tone, so the butcher
+   diagram fades almost completely instead of lightening the background. */
+html[data-mode="dark"] .art-pattern {
+  opacity: 0.05;
+  mix-blend-mode: soft-light;
+}
+
+.hover-lift {
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s ease,
+    border-color 0.4s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 40px -26px rgba(0, 0, 0, 0.55);
+}
+
+@keyframes float-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float-soft {
+  animation: float-soft 7s ease-in-out infinite;
+}
+
+@keyframes sheen {
+  from {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(240%) skewX(-18deg);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Buttons
+--------------------------------------------------------------------------- */
+.btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  cursor: pointer;
+  background-color: var(--color-brand);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.02em;
+  padding: 15px 35px;
+  border: 0;
+  transition:
+    background-color 0.35s ease,
+    transform 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+.btn-primary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 80%
+  );
+  transform: translateX(-130%);
+  transition: transform 0.65s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-brand-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -16px rgba(130, 31, 5, 0.9);
+}
+
+.btn-primary:hover::after {
+  transform: translateX(130%);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.btn-primary:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+/* ---------------------------------------------------------------------------
+   Navigation
+--------------------------------------------------------------------------- */
+.nav-link {
+  position: relative;
+  padding-block-end: 3px;
+  transition: color 0.3s ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-start: 0;
+  width: 0;
+  height: 1px;
+  background-color: currentColor;
+  transition: width 0.35s ease;
+}
+
+.nav-link:hover {
+  color: var(--color-brand);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------------------------
+   Rotating headline (blinds reveal)
+--------------------------------------------------------------------------- */
+.rotating-headline__stack {
+  display: inline-grid;
+  vertical-align: top;
+}
+
+.rotating-headline__word {
+  grid-area: 1 / 1;
+  opacity: 0;
+}
+
+.rotating-headline__word.is-active {
+  opacity: 1;
+}
+
+.rotating-headline__char {
+  display: inline-block;
+  /* Cairo's Arabic glyphs bleed past the tight inline box (ascenders,
+     descenders and the joined tails on both sides). The blinds reveal clips
+     to the border box, so the box is padded past the ink and the extra size
+     is cancelled with negative margins — otherwise Arabic words show up
+     sliced at the top, bottom and edges. */
+  padding: 0.34em 0.18em;
+  margin: -0.34em -0.18em;
+}
+
+.rotating-headline__word.is-active .rotating-headline__char {
+  animation: headline-blinds 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--char-index) * 32ms);
+}
+
+@keyframes headline-blinds {
+  0% {
+    opacity: 0;
+    transform: translateY(-0.35em) scaleY(0.65);
+    clip-path: inset(0 0 100% 0);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Carousel + marquee
+--------------------------------------------------------------------------- */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 20;
+  display: inline-flex;
+  height: 46px;
+  width: 46px;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  background-color: rgba(130, 31, 5, 0.95);
+  color: #ffffff;
+  transition:
+    background-color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.carousel-arrow:hover {
+  background-color: var(--color-brand-dark);
+  transform: translateY(-50%) scale(1.07);
+}
+
+.carousel-arrow:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: -4px;
+}
+
+.marquee-track {
+  animation: marquee-scroll 32s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* ---------------------------------------------------------------------------
+   Outlined statistics numbers (drawn, never filled with colour)
+--------------------------------------------------------------------------- */
+.outlined-number {
+  color: transparent;
+  -webkit-text-stroke: 2px color-mix(in srgb, var(--color-ink) 22%, transparent);
+  letter-spacing: 0;
+  transition: -webkit-text-stroke-color 0.4s ease, opacity 0.4s ease;
+}
+
+.outlined-number:hover {
+  -webkit-text-stroke-color: color-mix(in srgb, var(--color-brand) 65%, transparent);
+}
+
+/* ---------------------------------------------------------------------------
+   Scroll-in reveals (IntersectionObserver driven, see <Reveal />)
+--------------------------------------------------------------------------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(42px);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+[data-reveal="down"] {
+  transform: translateY(-42px);
+}
+
+[data-reveal="left"] {
+  transform: translateX(-64px);
+}
+
+[data-reveal="right"] {
+  transform: translateX(64px);
+}
+
+[data-reveal="zoom"] {
+  transform: scale(0.93);
+}
+
+[data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+/* Keep the hover lift working once the reveal has finished. */
+[data-reveal].is-revealed.hover-lift:hover {
+  transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Hero slideshow + mission slider
+--------------------------------------------------------------------------- */
+@keyframes slide-in-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-16%) scale(1.05);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+.slide-enter {
+  animation: slide-in-from-left 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes caption-rise {
+  from {
+    opacity: 0;
+    transform: translateY(34px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mission-caption {
+  animation: caption-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .rotating-headline__word.is-active .rotating-headline__char {
+    animation: none;
+  }
+
+  .marquee-track {
+    animation: none;
+  }
+
+  .slide-enter,
+  .mission-caption {
+    animation: none;
+  }
+}
