@@ -130,13 +130,6 @@ export default function HeroSection() {
               <p className="hero-fade-enter hero-delay-3 mt-5 max-w-[380px] text-[15px] leading-[1.8] text-body">
                 {t.hero.body}
               </p>
-
-              <a
-                href="#products"
-                className="hero-button-enter btn-primary mt-8"
-              >
-                {t.hero.button}
-              </a>
             </div>
           </Reveal>
 

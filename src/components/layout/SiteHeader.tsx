@@ -97,11 +97,6 @@ export default function SiteHeader() {
           <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-3 lg:gap-5">
             <ThemeSwitcher />
             <LanguageSwitcher />
-            <div className="hidden lg:block">
-              <a href="#products" className="btn-primary">
-                {t.nav.cta}
-              </a>
-            </div>
           </div>
         </div>
       </div>
@@ -131,13 +126,6 @@ export default function SiteHeader() {
                 </li>
               ))}
             </ul>
-            <a
-              href="#products"
-              onClick={() => setMobileOpen(false)}
-              className="btn-primary mt-5 w-full"
-            >
-              {t.nav.cta}
-            </a>
           </nav>
         </div>
       )}
